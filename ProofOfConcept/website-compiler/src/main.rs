@@ -1,8 +1,9 @@
 mod website_compiler;
-use futures::executor::block_on;
 
-fn main() {
-    println!("Hello, world!");
-    let future_get_website = website_compiler::get_website();
-    block_on(future_get_website)
+#[tokio::main]
+async fn main() {
+    let website_one = website_compiler::get_website("https://facebook.com").await;
+    println!("{}", website_one);
+    let website_two = website_compiler::get_website("https://google.com").await;
+    println!("{}", website_two);
 }
