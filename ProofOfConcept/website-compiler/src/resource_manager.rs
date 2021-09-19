@@ -56,7 +56,6 @@ pub fn get_byte_sequence_locations_list() -> serde_json::Map<String, Value> {
 }
 
 pub fn store_locations_list(locations_list: serde_json::Map<String, Value>) {
-    println!("{:?}", locations_list.get("test this").unwrap().as_str().unwrap());
     let file = OpenOptions::new()
         .create(true)
         .write(true)
