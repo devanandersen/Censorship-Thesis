@@ -22,27 +22,25 @@ pub fn compute_matching_sequences(website_to_compile: &mut String, reference_web
 
     let mut compile_index_pos = 0;
     let mut reference_index_pos = 0;
-    let mut new_compiled_website_source = String::from("");
+    let mut insertion_string = String::from("<!--");
     for (index_one, char_one) in website_to_compile_sequences.iter().enumerate() {
         for (index_two, char_two) in reference_website_sequences.iter().enumerate() {
             if char_one == char_two {
-                let insertion_string = format!("<!--{}:{}-->", sequence_length, reference_index_pos);
-
-                if !(compile_index_pos >= insertion_string.chars().count()) || &website_to_compile[(compile_index_pos-insertion_string.chars().count())..compile_index_pos] != insertion_string {
-                    locations_list.insert(char_one.to_string(), Value::String(reference_index_pos.to_string()));
-                    new_compiled_website_source.push_str(&insertion_string);
-                    reference_index_pos = reference_index_pos + char_two.chars().count();
-                }
+                insertion_string.push_str(&format!("{}-{}:{},", reference_index_pos, (reference_index_pos+sequence_length), compile_index_pos));
+                locations_list.insert(char_one.to_string(), Value::String(compile_index_pos.to_string()));
+                reference_index_pos = reference_index_pos + char_two.chars().count();
                 continue;
             }
             reference_index_pos = reference_index_pos + char_two.chars().count();
         }
         compile_index_pos = compile_index_pos + char_one.chars().count();
-        new_compiled_website_source.push_str(char_one);
         reference_index_pos = 0;
     }
+
     // TODO: Parse out remaining sequence length, if it exists.
-    *website_to_compile = new_compiled_website_source;
+    insertion_string.pop();
+    insertion_string.push_str("-->");
+    reference_website.push_str(&insertion_string);
 }
 
 pub fn compile_decentralized_source(website_to_compile: &mut String, locations_list: &mut serde_json::Map<String, Value>) -> String {
