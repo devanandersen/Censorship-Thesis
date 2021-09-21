@@ -1,9 +1,10 @@
 use serde_json::{Value, Map};
+use regex::Regex;
 
 pub fn compute_matching_sequences(website_to_compile: &mut String, reference_website: &mut String, locations_list: &mut serde_json::Map<String, Value>, sequence_length: usize) {
-    // TODO: Parse out HTML comments
-    *website_to_compile = website_to_compile.replace("\n", "");
-    *reference_website = reference_website.replace("\n", "");
+    let comment_regex = Regex::new(r"<!--(.*?)-->").unwrap();
+    *website_to_compile = comment_regex.replace_all(website_to_compile, "").to_string();
+    *reference_website = comment_regex.replace_all(reference_website, "").to_string();
 
     let mut website_to_compile_chars = website_to_compile.chars();
     let mut reference_website_chars = reference_website.chars();
