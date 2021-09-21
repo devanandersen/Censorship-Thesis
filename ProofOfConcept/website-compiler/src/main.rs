@@ -6,7 +6,7 @@ use serde_json::Value::*;
 async fn main() {
     let website_url_to_compile = "https://facebook.com";
     let website_url_to_reference = "https://google.com";
-    let sequence_length = 2;
+    let mut sequence_length = 2;
 
     // Returns a map
     // Can add a k, v pair through locations_list.insert("test this".to_string(), Value::String("testing".to_string()));
