@@ -27,6 +27,7 @@ pub fn compute_matching_sequences(website_to_compile: &mut String, reference_web
         reference_index_pos = 0;
         compile_index_pos = last_added_index_pos;
         for (index_one, char_one) in website_to_compile_sequences.iter().enumerate() {
+            reference_index_pos = 0;
             for (index_two, char_two) in reference_website_sequences.iter().enumerate() {
                 if char_one == char_two && last_added_index_pos < website_to_compile.chars().count() {
                     last_added_index_pos += curr_sequence_length;
@@ -39,7 +40,6 @@ pub fn compute_matching_sequences(website_to_compile: &mut String, reference_web
                 reference_index_pos = reference_index_pos + char_two.chars().count();
             }
             compile_index_pos = compile_index_pos + char_one.chars().count();
-            reference_index_pos = 0;
         }
         curr_sequence_length -= 1;
     }
