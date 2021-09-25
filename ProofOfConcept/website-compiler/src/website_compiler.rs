@@ -91,11 +91,11 @@ pub fn compile_decentralized_source(website_to_reference: &mut String, locations
 
 // Simply splits into character sequences of length split_length
 fn gather_char_sequences(chars_to_split: core::str::Chars, split_length: usize) -> Vec<std::string::String> {
-        let mut mutable_chars_array = chars_to_split;
-        let output_sequences = (0..)
-            .map(|_| mutable_chars_array.by_ref().take(split_length).collect::<String>())
-            .take_while(|s| !s.is_empty())
-            .collect::<Vec<_>>();
+    let mut mutable_chars_array = chars_to_split;
+    let output_sequences = (0..)
+        .map(|_| mutable_chars_array.by_ref().take(split_length).collect::<String>())
+        .take_while(|s| !s.is_empty())
+        .collect::<Vec<_>>();
 
-        return output_sequences
+    return output_sequences
 }
