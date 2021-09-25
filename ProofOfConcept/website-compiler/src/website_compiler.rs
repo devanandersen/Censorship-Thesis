@@ -49,9 +49,28 @@ pub fn compute_matching_sequences(website_to_compile: &mut String, reference_web
     reference_website.push_str(&insertion_string);
 }
 
-pub fn compile_decentralized_source(website_to_compile: &mut String, locations_list: &mut serde_json::Map<String, Value>) -> String {
-    println!("maAaaaaaAAAAgic");
-    String::from("return filler")
+pub fn compile_decentralized_source(website_to_reference: &mut String, locations_list: &mut serde_json::Map<String, Value>) -> String {
+    let comment_regex = Regex::new(r"<!--(.*?)-->").unwrap();
+    let comment_list: Vec<Vec<_>> = comment_regex.captures_iter(website_to_reference)
+        .map(|c| c.iter().map(|m| m.unwrap().as_str()).collect())
+        .collect();
+    let comment_for_compiling: Vec<&str> = comment_list.last().unwrap().last().unwrap().split(",").collect();
+    let mut new_compiled_website_string = String::from("");
+    for sequence_set in comment_for_compiling {
+        let sequence_mappings: Vec<&str> = sequence_set.split(":").collect();
+        let sequence_origin_location: Vec<usize> = sequence_mappings.first().unwrap().split("-")
+            .map(|x| x.parse::<usize>().unwrap())
+            .collect();
+        let beginning_char: usize = *sequence_origin_location.first().unwrap();
+        let ending_char: usize = *sequence_origin_location.last().unwrap();
+        let placement_location: usize = sequence_mappings.last().unwrap().parse::<usize>().unwrap();
+
+        let website_reference_str = website_to_reference.as_str();
+        new_compiled_website_string.insert_str(placement_location, &website_reference_str[beginning_char..ending_char]);
+    }
+
+    new_compiled_website_string.push_str("<!-- Compiled using https://github.com/devanandersen/Censorship-Thesis -->");
+    new_compiled_website_string
 }
 
 fn gather_char_sequences(chars_to_split: core::str::Chars, split_length: usize) -> Vec<std::string::String> {
