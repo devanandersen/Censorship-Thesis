@@ -29,7 +29,7 @@ pub fn compute_matching_sequences(website_to_compile: &mut String, reference_web
         for (index_one, char_one) in website_to_compile_sequences.iter().enumerate() {
             reference_index_pos = 0;
             for (index_two, char_two) in reference_website_sequences.iter().enumerate() {
-                if char_one == char_two {
+                if char_one == char_two && compile_index_pos < website_to_compile.chars().count() - 1 {
                     if !locations_list.contains_key(&compile_index_pos.to_string()) {
                         last_added_index_pos += curr_sequence_length;
                         insertion_string.push_str(&format!("{}-{}:{},", reference_index_pos, (reference_index_pos+curr_sequence_length), compile_index_pos));
