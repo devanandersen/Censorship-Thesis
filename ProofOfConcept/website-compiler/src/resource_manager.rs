@@ -31,17 +31,16 @@ pub fn store_website_file(url: &str, website_string: &str) {
 
     let website_path = format!("website_store/{}", &url[8..]);
     if Path::new(&website_path).exists() {
-        std::fs::remove_file(&website_path);
+        std::fs::remove_file(&website_path).map_err(|err| println!("{:?}", err)).ok();
     }
 
     let mut file = File::create(website_path).expect("Create failed");
-    file.write_all(website_string.as_bytes()).expect("Unable to write file")
+    file.write_all(website_string.as_bytes()).expect("Unable to write file");
 }
 
 pub fn get_byte_sequence_locations_list() -> serde_json::Map<String, Value> {
     let path = Path::new("locations_list.json");
-    // To keep track of sequences loaded over time, we store them all in a file locally.
-    // If the file doesn't exist yet, we create it.
+
     if path.exists() {
         let json_file_string = read_to_string(path).unwrap();
         println!("{}", json_file_string);
@@ -55,7 +54,7 @@ pub fn get_byte_sequence_locations_list() -> serde_json::Map<String, Value> {
     }
 }
 
-pub fn store_locations_list(locations_list: serde_json::Map<String, Value>) {
+pub fn _store_locations_list(locations_list: serde_json::Map<String, Value>) {
     let file = OpenOptions::new()
         .create(true)
         .write(true)
@@ -63,6 +62,6 @@ pub fn store_locations_list(locations_list: serde_json::Map<String, Value>) {
         .open("locations_list.json")
         .unwrap();
 
-    serde_json::to_writer(&file, &locations_list);
+    serde_json::to_writer(&file, &locations_list).map_err(|err| println!("{:?}", err)).ok();
 }
 

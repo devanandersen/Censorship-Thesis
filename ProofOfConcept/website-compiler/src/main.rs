@@ -1,18 +1,14 @@
 mod resource_manager;
 mod website_compiler;
-use serde_json::Value::*;
 
 #[tokio::main]
 async fn main() {
     let website_url_to_compile = "https://facebook.com";
     let website_url_to_reference = "https://google.com";
-    let mut sequence_length = 5;
+    let sequence_length = 5;
 
-    // Returns a map
-    // Can add a k, v pair through locations_list.insert("test this".to_string(), Value::String("testing".to_string()));
     let mut locations_list = resource_manager::get_byte_sequence_locations_list();
 
-    // Returns HTML as string
     let mut website_to_compile = resource_manager::get_website(website_url_to_compile).await.unwrap();
     let mut website_to_reference = resource_manager::get_website(website_url_to_reference).await.unwrap();
 
@@ -22,5 +18,5 @@ async fn main() {
     resource_manager::store_website_file(website_url_to_compile, &website_to_compile);
     resource_manager::store_website_file(website_url_to_reference, &website_to_reference);
     resource_manager::store_website_file("https://recompiled_website.com", &decentralized_compiled_website);
-    //resource_manager::store_locations_list(locations_list);
+    //resource_manager::_store_locations_list(locations_list);
 }
