@@ -8,7 +8,7 @@ use std::io::Write;
 use serde_json::{Value, Map};
 
 pub async fn get_website(url: &str) -> Result<String, Box<dyn Error>> {
-    let website_path = format!("./website_store/{}", &url[8..]);
+    let website_path = format!("./website_store/{}.html", &url[8..]);
     let path = Path::new(&website_path);
     // To simulate websites adding tags, we store HTML locally and update it as the program runs.
     // This is done in individual files stored under the website name
@@ -29,7 +29,7 @@ pub fn store_website_file(url: &str, website_string: &str) {
         create_dir("./website_store/").expect("Unable to create directory");
     }
 
-    let website_path = format!("website_store/{}", &url[8..]);
+    let website_path = format!("website_store/{}.html", &url[8..]);
     if Path::new(&website_path).exists() {
         std::fs::remove_file(&website_path).map_err(|err| println!("{:?}", err)).ok();
     }

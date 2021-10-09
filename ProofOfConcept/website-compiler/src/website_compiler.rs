@@ -3,8 +3,9 @@ use regex::Regex;
 
 pub fn compute_matching_sequences(website_to_compile: &mut String, reference_website: &mut String, locations_list: &mut serde_json::Map<String, Value>, sequence_length: usize) {
     let comment_regex = Regex::new(r"<!--(.*?)-->").unwrap();
-    *website_to_compile = comment_regex.replace_all(website_to_compile, "").to_string();
-    *reference_website = comment_regex.replace_all(reference_website, "").to_string();
+    *website_to_compile = comment_regex.replace_all(website_to_compile, "").trim().to_string();
+    *reference_website = comment_regex.replace_all(reference_website, "").trim().to_string();
+    reference_website.push_str("\n");
 
     let mut compile_index_pos;
     let mut reference_index_pos;
@@ -27,21 +28,23 @@ pub fn compute_matching_sequences(website_to_compile: &mut String, reference_web
         compile_index_pos = 0;
         for (_index_one, sequence_one) in website_to_compile_sequences.iter().enumerate() {
             let sequence_one_length = sequence_one.chars().count();
-            reference_index_pos = 0;
-            for (_index_two, sequence_two) in reference_website_sequences.iter().enumerate() {
-                let sequence_two_length = sequence_two.chars().count();
-                if sequence_one == sequence_two && compile_index_pos <= compile_website_length {
-                    if !locations_list.contains_key(&compile_index_pos.to_string()) {
-                        last_added_index_pos += curr_sequence_length;
-                        insertion_string.push_str(&format!("{}-{}:{},", reference_index_pos, (reference_index_pos+curr_sequence_length), compile_index_pos));
-                        for index_accounted_for in compile_index_pos..compile_index_pos+sequence_one_length {
-                            locations_list.insert(index_accounted_for.to_string(), Value::String(sequence_one.to_string()));
-                        }
-                        reference_index_pos = reference_index_pos + sequence_two_length;
-                        continue;
+            if !locations_list.contains_key(&compile_index_pos.to_string()) {
+                reference_index_pos = 0;
+                for (_index_two, sequence_two) in reference_website_sequences.iter().enumerate() {
+                    let sequence_two_length = sequence_two.chars().count();
+                    if sequence_one == sequence_two
+                        && compile_index_pos <= compile_website_length
+                        && !locations_list.contains_key(&compile_index_pos.to_string()) {
+                            last_added_index_pos += curr_sequence_length;
+                            insertion_string.push_str(&format!("{}-{}:{},", reference_index_pos, (reference_index_pos+curr_sequence_length), compile_index_pos));
+                            for index_accounted_for in compile_index_pos..compile_index_pos+sequence_one_length {
+                                locations_list.insert(index_accounted_for.to_string(), Value::String(sequence_one.to_string()));
+                            }
+                            reference_index_pos = reference_index_pos + sequence_two_length;
+                            continue;
                     }
+                    reference_index_pos = reference_index_pos + sequence_two_length;
                 }
-                reference_index_pos = reference_index_pos + sequence_two_length;
             }
             compile_index_pos = compile_index_pos + sequence_one_length;
         }
