@@ -1,5 +1,6 @@
 use serde_json::Value;
 use regex::Regex;
+use base64::{encode, decode};
 
 pub fn compute_matching_sequences(website_to_compile: &mut String, reference_website: &mut String, locations_list: &mut serde_json::Map<String, Value>, sequence_length: usize) {
     let comment_regex = Regex::new(r"<!--(.*?)-->").unwrap();
@@ -9,7 +10,7 @@ pub fn compute_matching_sequences(website_to_compile: &mut String, reference_web
 
     let mut compile_index_pos;
     let mut reference_index_pos;
-    let mut insertion_string = String::from("<!--");
+    let mut insertion_string = String::from("");
     let mut last_added_index_pos = 0;
     let mut curr_sequence_length = sequence_length;
     let compile_website_length = website_to_compile.chars().count();
@@ -52,7 +53,10 @@ pub fn compute_matching_sequences(website_to_compile: &mut String, reference_web
     }
 
     insertion_string.pop();
+    insertion_string = encode(insertion_string).to_string();
+    insertion_string.insert_str(0, "<!--");
     insertion_string.push_str("-->");
+
     reference_website.push_str(&insertion_string);
 }
 
@@ -61,7 +65,9 @@ pub fn compile_decentralized_source(website_to_reference: &mut String, _location
     let comment_list: Vec<Vec<_>> = comment_regex.captures_iter(website_to_reference)
         .map(|c| c.iter().map(|m| m.unwrap().as_str()).collect())
         .collect();
-    let comment_for_compiling: Vec<&str> = comment_list.last().unwrap().last().unwrap().split(",").collect();
+    let decoded_vec = &decode(comment_list.last().unwrap().last().unwrap()).unwrap();
+    let decoded_string = std::str::from_utf8(decoded_vec).unwrap();
+    let comment_for_compiling: Vec<&str> = decoded_string.split(",").collect();
     let mut new_compiled_website_string = String::from("");
 
     for sequence_set in comment_for_compiling {
