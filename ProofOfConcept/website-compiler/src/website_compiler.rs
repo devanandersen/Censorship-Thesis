@@ -1,6 +1,5 @@
 use serde_json::Value;
 use regex::Regex;
-use base64::{encode, decode};
 
 pub fn compute_matching_sequences(website_to_compile: &mut String, reference_website: &mut String, locations_list: &mut serde_json::Map<String, Value>, sequence_length: usize) {
     let comment_regex = Regex::new(r"<!--(.*?)-->").unwrap();
@@ -8,8 +7,6 @@ pub fn compute_matching_sequences(website_to_compile: &mut String, reference_web
     *reference_website = comment_regex.replace_all(reference_website, "").trim().to_string();
     reference_website.push_str("\n");
 
-    let mut compile_index_pos;
-    let mut reference_index_pos;
     let mut insertion_string = String::from("");
     let mut last_added_index_pos = 0;
     let mut curr_sequence_length = sequence_length;
@@ -23,37 +20,33 @@ pub fn compute_matching_sequences(website_to_compile: &mut String, reference_web
 
         let website_to_compile_chars = website_to_compile.chars();
         let reference_website_chars = reference_website.chars();
-        let website_to_compile_sequences = gather_char_sequences(website_to_compile_chars, curr_sequence_length);
-        let reference_website_sequences = gather_char_sequences(reference_website_chars, curr_sequence_length);
+        let website_to_compile_tuple = gather_char_sequences(website_to_compile_chars, curr_sequence_length);
+        let website_to_compile_sequences = website_to_compile_tuple.0;
+        let website_to_compile_indexes = website_to_compile_tuple.1;
+        let reference_website_tuple = gather_char_sequences(reference_website_chars, curr_sequence_length);
+        let reference_website_sequences = reference_website_tuple.0;
+        let reference_website_indexes = reference_website_tuple.1;
 
-        compile_index_pos = 0;
-        for (_index_one, sequence_one) in website_to_compile_sequences.iter().enumerate() {
-            let sequence_one_length = sequence_one.chars().count();
-            if !locations_list.contains_key(&compile_index_pos.to_string()) {
-                reference_index_pos = 0;
+        'outer: for (_index_one, sequence_one) in website_to_compile_sequences.iter().enumerate() {
+            if !locations_list.contains_key(&website_to_compile_indexes[_index_one][0].to_string()) {
                 for (_index_two, sequence_two) in reference_website_sequences.iter().enumerate() {
-                    let sequence_two_length = sequence_two.chars().count();
                     if sequence_one == sequence_two
-                        && compile_index_pos <= compile_website_length
-                        && !locations_list.contains_key(&compile_index_pos.to_string()) {
-                            last_added_index_pos += curr_sequence_length;
-                            insertion_string.push_str(&format!("{}-{}:{},", reference_index_pos, (reference_index_pos+curr_sequence_length), compile_index_pos));
-                            for index_accounted_for in compile_index_pos..compile_index_pos+sequence_one_length {
+                        && website_to_compile_indexes[_index_one][0] <= compile_website_length
+                        && !locations_list.contains_key(&website_to_compile_indexes[_index_one][0].to_string()) {
+                            last_added_index_pos += &website_to_compile_indexes[_index_one][1]-&website_to_compile_indexes[_index_one][0];
+                            insertion_string.push_str(&format!("{}-{}:{},", reference_website_indexes[_index_two][0], (reference_website_indexes[_index_two][1]), website_to_compile_indexes[_index_one][0]));
+                            for index_accounted_for in website_to_compile_indexes[_index_one][0]..website_to_compile_indexes[_index_one][1] {
                                 locations_list.insert(index_accounted_for.to_string(), Value::String(sequence_one.to_string()));
                             }
-                            reference_index_pos = reference_index_pos + sequence_two_length;
-                            continue;
+                            continue 'outer;
                     }
-                    reference_index_pos = reference_index_pos + sequence_two_length;
                 }
             }
-            compile_index_pos = compile_index_pos + sequence_one_length;
         }
-        curr_sequence_length -= 1
+        curr_sequence_length -= 1;
     }
 
     insertion_string.pop();
-    insertion_string = encode(insertion_string).to_string();
     insertion_string.insert_str(0, "<!--");
     insertion_string.push_str("-->");
 
@@ -65,9 +58,7 @@ pub fn compile_decentralized_source(website_to_reference: &mut String, _location
     let comment_list: Vec<Vec<_>> = comment_regex.captures_iter(website_to_reference)
         .map(|c| c.iter().map(|m| m.unwrap().as_str()).collect())
         .collect();
-    let decoded_vec = &decode(comment_list.last().unwrap().last().unwrap()).unwrap();
-    let decoded_string = std::str::from_utf8(decoded_vec).unwrap();
-    let comment_for_compiling: Vec<&str> = decoded_string.split(",").collect();
+    let comment_for_compiling: Vec<&str> = comment_list.last().unwrap().last().unwrap().split(",").collect();
     let mut new_compiled_website_string = String::from("");
 
     for sequence_set in comment_for_compiling {
@@ -87,10 +78,12 @@ pub fn compile_decentralized_source(website_to_reference: &mut String, _location
             }
         }
 
+
+        let sequence_to_print = &website_reference_str[beginning_char..ending_char];
         if new_compiled_website_string.len() == placement_location {
-            new_compiled_website_string.push_str(&website_reference_str[beginning_char..ending_char]);
+            new_compiled_website_string.push_str(&sequence_to_print);
         } else {
-            new_compiled_website_string.replace_range(placement_location..placement_location+length, &website_reference_str[beginning_char..ending_char]);
+            new_compiled_website_string.replace_range(placement_location..placement_location+length, &sequence_to_print);
         }
     }
 
@@ -98,12 +91,22 @@ pub fn compile_decentralized_source(website_to_reference: &mut String, _location
     new_compiled_website_string
 }
 
-fn gather_char_sequences(chars_to_split: core::str::Chars, split_length: usize) -> Vec<std::string::String> {
-    let mut mutable_chars_array = chars_to_split;
-    let output_sequences = (0..)
-        .map(|_| mutable_chars_array.by_ref().take(split_length).collect::<String>())
-        .take_while(|s| !s.is_empty())
-        .collect::<Vec<_>>();
+fn gather_char_sequences(chars_to_split: core::str::Chars, split_length: usize) -> (Vec<std::string::String>, Vec<Vec<usize>>) {
+    let website_string = chars_to_split.as_str();
+    let mut size_vec = Vec::new();
+    let mut output_sequences = vec![];
+    let mut iter = chars_to_split;
+    let mut pos = 0;
 
-    return output_sequences
+    while pos < website_string.len() {
+        let mut len = 0;
+        for ch in iter.by_ref().take(split_length) {
+            len += ch.len_utf8();
+        }
+        output_sequences.push(website_string[pos..pos + len].to_string());
+        size_vec.push(vec![pos, pos+len]);
+        pos += len;
+    }
+
+    return (output_sequences, size_vec)
 }

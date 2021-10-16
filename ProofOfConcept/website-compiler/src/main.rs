@@ -3,8 +3,8 @@ mod website_compiler;
 
 #[tokio::main]
 async fn main() {
-    let website_url_to_compile = "https://facebook.com";
-    let website_url_to_reference = "https://google.com";
+    let website_url_to_compile = "https://carleton.ca";
+    let website_url_to_reference = "https://carleton.ca";
     let sequence_length = 5;
 
     let mut locations_list = resource_manager::get_byte_sequence_locations_list();
