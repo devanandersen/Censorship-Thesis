@@ -44,6 +44,6 @@ pub fn final_stats_and_proportions(candidate_website: String, helper_website: St
 
     let increase_in_space = (mapped_helper_length as f64 / unmapped_helper_length as f64) * 100 as f64;
     let average_sequence_size = candidate_length as f64 / total_mappings as f64;
-    println!("- Website Lengths:\n\t- Candidate Website Length: {}\n\t- Helper Website Length without Mappings: {}\n\t- Helper Website Length with Mappings: {}\n\t- Increase in Helper Space: {:.2}%\n\t- Average Sequence Size Found: {:.2}", candidate_length, unmapped_helper_length, mapped_helper_length, increase_in_space, average_sequence_size);
+    println!("- Website Lengths:\n\t- Candidate Website Length: {}\n\t- Helper Website Length without Mappings: {}\n\t- Helper Website Length with Mappings: {}\n\t- Increase in Helper Length: {:.2}%\n\t- Average Sequence Size Found: {:.2}", candidate_length, unmapped_helper_length, mapped_helper_length, increase_in_space, average_sequence_size);
 }
 

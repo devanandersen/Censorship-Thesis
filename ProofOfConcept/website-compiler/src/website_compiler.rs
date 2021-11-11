@@ -8,16 +8,10 @@ pub fn compute_matching_sequences(candidate_website: &mut String, helper_website
     helper_website.push_str("\n");
 
     let mut insertion_string = String::from("");
-    let mut last_added_index_pos = 0;
     let mut curr_sequence_length = sequence_length;
     let compile_website_length = candidate_website.chars().count();
 
-    while last_added_index_pos < compile_website_length && curr_sequence_length >= 1 {
-        if curr_sequence_length > (compile_website_length - last_added_index_pos) {
-            curr_sequence_length -= 1;
-            continue;
-        }
-
+    while curr_sequence_length > 0 {
         let candidate_website_chars = candidate_website.chars();
         let helper_website_chars = helper_website.chars();
         let candidate_website_tuple = gather_char_sequences(candidate_website_chars, curr_sequence_length);
@@ -28,18 +22,21 @@ pub fn compute_matching_sequences(candidate_website: &mut String, helper_website
         let helper_website_indexes = helper_website_tuple.1;
 
         'outer: for (_index_one, sequence_one) in candidate_website_sequences.iter().enumerate() {
-            if !locations_list.contains_key(&candidate_website_indexes[_index_one][0].to_string()) {
-                for (_index_two, sequence_two) in helper_website_sequences.iter().enumerate() {
-                    if sequence_one == sequence_two
-                        && candidate_website_indexes[_index_one][0] <= compile_website_length
-                        && !locations_list.contains_key(&candidate_website_indexes[_index_one][0].to_string()) {
-                            last_added_index_pos += &candidate_website_indexes[_index_one][1]-&candidate_website_indexes[_index_one][0];
-                            insertion_string.push_str(&format!("{}-{}:{},", helper_website_indexes[_index_two][0], (helper_website_indexes[_index_two][1]), candidate_website_indexes[_index_one][0]));
-                            for index_accounted_for in candidate_website_indexes[_index_one][0]..candidate_website_indexes[_index_one][1] {
-                                locations_list.insert(index_accounted_for.to_string(), Value::String(sequence_one.to_string()));
-                            }
-                            continue 'outer;
-                    }
+            let mut sequence_included = true;
+            for index_accounted_for in candidate_website_indexes[_index_one][0]..candidate_website_indexes[_index_one][1] {
+                if !locations_list.contains_key(&index_accounted_for.to_string()) {
+                    sequence_included = false;
+                }
+            }
+            if sequence_included { continue 'outer; }
+            for (_index_two, sequence_two) in helper_website_sequences.iter().enumerate() {
+                if sequence_one == sequence_two
+                    && candidate_website_indexes[_index_one][0] <= compile_website_length {  
+                        insertion_string.push_str(&format!("{}-{}:{},", helper_website_indexes[_index_two][0], (helper_website_indexes[_index_two][1]), candidate_website_indexes[_index_one][0]));
+                        for index_accounted_for in candidate_website_indexes[_index_one][0]..candidate_website_indexes[_index_one][1] {
+                            locations_list.insert(index_accounted_for.to_string(), Value::String(sequence_one.to_string()));
+                        }
+                        continue 'outer;
                 }
             }
         }
@@ -72,8 +69,8 @@ pub fn compile_decentralized_source(helper_website: &mut String, _locations_list
         let placement_location: usize = sequence_mappings.last().unwrap().parse::<usize>().unwrap();
 
         let helper_website_str = helper_website.as_str();
-        if new_compiled_website_string.len() < placement_location {
-            for _ in new_compiled_website_string.len()..placement_location {
+        if new_compiled_website_string.len() <= placement_location+length {
+            for _ in new_compiled_website_string.len()..placement_location+length {
                 new_compiled_website_string.push(' ');
             }
         }

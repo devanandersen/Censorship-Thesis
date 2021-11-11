@@ -7,8 +7,8 @@ use std::env;
 #[tokio::main]
 async fn main() {
     let args: Vec<String> = env::args().collect();
-    let candidate_website_url = "https://facebook.com";
-    let helper_website_url = "https://google.com";
+    let candidate_website_url = "https://carleton.ca";
+    let helper_website_url = "https://nytimes.com";
     let sequence_length = 5;
 
     let mut locations_list = resource_manager::get_byte_sequence_locations_list();
