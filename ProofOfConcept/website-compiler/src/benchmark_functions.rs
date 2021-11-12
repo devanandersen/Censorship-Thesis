@@ -29,7 +29,8 @@ pub fn final_stats_and_proportions(candidate_website: String, helper_website: St
             .collect();
         let beginning_char: usize = *sequence_origin_location.first().unwrap();
         let ending_char: usize = *sequence_origin_location.last().unwrap();
-        let length = ending_char-beginning_char;
+        let mut length = ending_char-beginning_char;
+        if length > sequence_length { length = sequence_length; }
         proportion_vec[length-1] += 1;
     }
     println!("- Final Website Compiled from {} mappings:", total_sequences_mapped);
