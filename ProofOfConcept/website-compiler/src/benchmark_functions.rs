@@ -2,6 +2,9 @@ use regex::Regex;
 
 // A benchmark worst case runtime for the provided websites and sequence length.
 pub fn base_case_compile_timing(candidate_website_length: usize, helper_website_length: usize, _sequence_length: usize) { 
+    println!("Website Lengths:\n\tCandidate Website: {}\n\tHelper Website: {}", candidate_website_length, helper_website_length);
+    // Adjust for Mapping, remove from website content
+    // Broken
     for _i in 1..candidate_website_length {
         for _j in 1..helper_website_length {
             {}
