@@ -8,8 +8,11 @@ use std::env;
 async fn main() {
     let args: Vec<String> = env::args().collect();
     let candidate_website_url = "https://carleton.ca";
-    let helper_website_url = "https://www2.uottawa.ca";
-    let second_helper_website_url = "https://nytimes.com";
+    let helper_website_url = "https://reddit.com";
+    let second_helper_website_url = "https://amazon.com";
+    let third_helper_website_url = "https://nytimes.com";
+    let fourth_helper_website_url = "https://youtube.com";
+    let fifth_helper_website_url = "https://www2.uottawa.ca";
     let sequence_length = 5;
 
     let mut helper_websites = Vec::new();
@@ -17,8 +20,14 @@ async fn main() {
     let mut candidate_website = resource_manager::get_website(candidate_website_url).await.unwrap();
     let helper_website = resource_manager::get_website(helper_website_url).await.unwrap();
     let second_helper_website = resource_manager::get_website(second_helper_website_url).await.unwrap();
+    let third_helper_website = resource_manager::get_website(third_helper_website_url).await.unwrap();
+    let fourth_helper_website = resource_manager::get_website(fourth_helper_website_url).await.unwrap();
+    let fifth_helper_website = resource_manager::get_website(fifth_helper_website_url).await.unwrap();
     helper_websites.push(helper_website.clone());
     helper_websites.push(second_helper_website.clone());
+    helper_websites.push(third_helper_website.clone());
+    helper_websites.push(fourth_helper_website.clone());
+    helper_websites.push(fifth_helper_website.clone());
 
     if args.contains(&String::from("bench")) {
         println!("Running Benchmark Timing...\n---------------------------------------");
