@@ -16,6 +16,7 @@ async fn main() {
     let sequence_length = 5;
 
     let mut helper_websites = Vec::new();
+    let mut helper_website_urls = Vec::new();
     let mut locations_list = resource_manager::get_byte_sequence_locations_list();
     let mut candidate_website = resource_manager::get_website(candidate_website_url).await.unwrap();
     let helper_website = resource_manager::get_website(helper_website_url).await.unwrap();
@@ -24,10 +25,15 @@ async fn main() {
     let fourth_helper_website = resource_manager::get_website(fourth_helper_website_url).await.unwrap();
     let fifth_helper_website = resource_manager::get_website(fifth_helper_website_url).await.unwrap();
     helper_websites.push(helper_website.clone());
+    helper_website_urls.push(helper_website_url);
     helper_websites.push(second_helper_website.clone());
+    helper_website_urls.push(second_helper_website_url);
     helper_websites.push(third_helper_website.clone());
+    helper_website_urls.push(third_helper_website_url);
     helper_websites.push(fourth_helper_website.clone());
+    helper_website_urls.push(fourth_helper_website_url);
     helper_websites.push(fifth_helper_website.clone());
+    helper_website_urls.push(fifth_helper_website_url);
 
     if args.contains(&String::from("bench")) {
         println!("Running Benchmark Timing...\n---------------------------------------");
@@ -44,9 +50,11 @@ async fn main() {
     println!("Compilation execution time:\n\t- Seconds: {}\n\t- Milliseconds {}\n", compile_time_end.as_secs(), compile_time_end.as_millis());
 
     println!("Constructing Website from Mapping...\n---------------------------------------");
+    for (index, helper) in helper_websites.iter().enumerate() {
+        resource_manager::store_website_file(helper_website_urls[index], &helper);
+    }
     let compiled_candidate_website = website_compiler::compile_decentralized_source(&mut helper_websites, &mut locations_list);
     resource_manager::store_website_file(candidate_website_url, &candidate_website);
-    resource_manager::store_website_file(helper_website_url, &helper_website);
     resource_manager::store_website_file("https://recompiled_website.com", &compiled_candidate_website);
     //resource_manager::_store_locations_list(locations_list);
     benchmark_functions::final_stats_and_proportions(candidate_website, helper_websites, sequence_length);
