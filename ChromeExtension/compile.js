@@ -1,27 +1,14 @@
+import fetch from 'node-fetch'
+import fs from 'fs'
+
 function compileDecentralizedSource(helperWebsites = null) {
   helperWebsites = []
 
-  readFile('website_store/reddit.com.html', function(_res){
-    helperWebsites.push(_res)
-  });
-  readFile('website_store/amazon.com.html', function(_res){
-    helperWebsites.push(_res)
-  });
-  readFile('website_store/nytimes.com.html', function(_res){
-    helperWebsites.push(_res)
-  });
-  readFile('website_store/youtube.com.html', function(_res){
-    helperWebsites.push(_res)
-  });
-  readFile('website_store/www2.uottawa.ca.html', function(_res){
-    helperWebsites.push(_res)
-  });
-
-  //helperWebsites.push(fs.readFileSync('website_store/reddit.com.html', 'utf8').toString())
-  //helperWebsites.push(fs.readFileSync('website_store/amazon.com.html', 'utf8').toString())
-  //helperWebsites.push(fs.readFileSync('website_store/nytimes.com.html', 'utf8').toString())
-  //helperWebsites.push(fs.readFileSync('website_store/youtube.com.html', 'utf8').toString())
-  //helperWebsites.push(fs.readFileSync('website_store/www2.uottawa.ca.html', 'utf8').toString())
+  helperWebsites.push(fs.readFileSync('website_store/reddit.com.html', 'utf8').toString())
+  helperWebsites.push(fs.readFileSync('website_store/amazon.com.html', 'utf8').toString())
+  helperWebsites.push(fs.readFileSync('website_store/nytimes.com.html', 'utf8').toString())
+  helperWebsites.push(fs.readFileSync('website_store/youtube.com.html', 'utf8').toString())
+  helperWebsites.push(fs.readFileSync('website_store/www2.uottawa.ca.html', 'utf8').toString())
   let newCompiledWebsiteString = []
 
   for (let helperWebsite of helperWebsites) {
@@ -50,8 +37,9 @@ function compileDecentralizedSource(helperWebsites = null) {
         if (newCompiledWebsiteString.length == placementLocation) {
           newCompiledWebsiteString = newCompiledWebsiteString.concat(sequenceToPrint)
         } else {
-          newCompiledWebsiteString.splice(placementLocation, length, sequenceToPrint)
-          newCompiledWebsiteString = newCompiledWebsiteString.flat()
+          for (let i = 0; i < length; i++) {
+            newCompiledWebsiteString.splice(placementLocation+i, 1, sequenceToPrint[i])
+          }
         }
         console.log(`${sequenceIndex} ${commentForCompiling.length}`)
       }
@@ -80,3 +68,5 @@ function readFile(_path, _cb){
     });
 };
 
+
+compileDecentralizedSource()

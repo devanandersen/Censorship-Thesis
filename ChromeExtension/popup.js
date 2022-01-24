@@ -50,8 +50,9 @@ function compileDecentralizedSource(helperWebsites = null) {
         if (newCompiledWebsiteString.length == placementLocation) {
           newCompiledWebsiteString = newCompiledWebsiteString.concat(sequenceToPrint)
         } else {
-          newCompiledWebsiteString.splice(placementLocation, length, sequenceToPrint)
-          newCompiledWebsiteString = newCompiledWebsiteString.flat()
+          for (let i = 0; i < length; i++) {
+            newCompiledWebsiteString.splice(placementLocation+i, 1, sequenceToPrint[i])
+          }
         }
         console.log(`${sequenceIndex} ${commentForCompiling.length}`)
       }
