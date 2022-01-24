@@ -80,14 +80,3 @@ function readFile(_path, _cb){
     });
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-  console.log("Loaded")
-
-  let searchForm = document.getElementById("circumvented-search");
-
-  searchForm.addEventListener("submit", async (e) => {
-    e.preventDefault()
-    compileDecentralizedSource()
-    chrome.tabs.create({ url: chrome.runtime.getURL('website_store/recompiled_website.com.html') });
-  });
-})
