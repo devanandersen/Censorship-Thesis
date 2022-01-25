@@ -41,7 +41,7 @@ function compileDecentralizedSource(helperWebsites = null) {
             newCompiledWebsiteString.splice(placementLocation+i, 1, sequenceToPrint[i])
           }
         }
-        console.log(`${sequenceIndex} ${commentForCompiling.length}`)
+        //console.log(`${sequenceIndex} ${commentForCompiling.length}`)
       }
     }
   }

@@ -1,27 +1,29 @@
-function compileDecentralizedSource(helperWebsites = null) {
+async function compileDecentralizedSource(helperWebsites = null) {
   helperWebsites = []
+  urls = ['website_store/reddit.com.html', 'website_store/amazon.com.html', 'website_store/nytimes.com.html', 'website_store/www2.uottawa.ca.html', 'website_store/youtube.com.html']
 
-  readFile('website_store/reddit.com.html', function(_res){
-    helperWebsites.push(_res)
-  });
-  readFile('website_store/amazon.com.html', function(_res){
-    helperWebsites.push(_res)
-  });
-  readFile('website_store/nytimes.com.html', function(_res){
-    helperWebsites.push(_res)
-  });
-  readFile('website_store/youtube.com.html', function(_res){
-    helperWebsites.push(_res)
-  });
-  readFile('website_store/www2.uottawa.ca.html', function(_res){
-    helperWebsites.push(_res)
-  });
+  helperWebsites = await getHelperWebsites(urls)
 
-  //helperWebsites.push(fs.readFileSync('website_store/reddit.com.html', 'utf8').toString())
-  //helperWebsites.push(fs.readFileSync('website_store/amazon.com.html', 'utf8').toString())
-  //helperWebsites.push(fs.readFileSync('website_store/nytimes.com.html', 'utf8').toString())
-  //helperWebsites.push(fs.readFileSync('website_store/youtube.com.html', 'utf8').toString())
-  //helperWebsites.push(fs.readFileSync('website_store/www2.uottawa.ca.html', 'utf8').toString())
+  //let test = readFile('website_store/reddit.com.html', function(_res){
+  //  helperWebsites.push(_res)
+  //});
+  //let test2 = readFile('website_store/amazon.com.html', function(_res){
+  //  helperWebsites.push(_res)
+  //});
+  //let test3 = readFile('website_store/nytimes.com.html', function(_res){
+  //  helperWebsites.push(_res)
+  //});
+  //let test4 = readFile('website_store/www2.uottawa.ca.html', function(_res){
+  //  helperWebsites.push(_res)
+  //});
+  //let test5 = readFile('website_store/youtube.com.html', function(_res){
+  //  helperWebsites.push(_res)
+  //});
+
+  //await Promise.all([test, test2, test3, test4, test5])
+
+  for (let i = 0; i < helperWebsites.length; i++) { console.log(helperWebsites[i].length) }
+
   let newCompiledWebsiteString = []
 
   for (let helperWebsite of helperWebsites) {
@@ -54,41 +56,58 @@ function compileDecentralizedSource(helperWebsites = null) {
             newCompiledWebsiteString.splice(placementLocation+i, 1, sequenceToPrint[i])
           }
         }
-        console.log(`${sequenceIndex} ${commentForCompiling.length}`)
+        //console.log(`${sequenceIndex} ${commentForCompiling.length}`)
       }
     }
   }
 
   newCompiledWebsiteString = Buffer.from(newCompiledWebsiteString, 'utf8').toString()
   newCompiledWebsiteString.concat("\n<!-- Compiled using https://github.com/devanandersen/Censorship-Thesis -->")
-  fs.writeFile("website_store/recompiled_website.html", newCompiledWebsiteString, function(err, result) {
-    if (err) console.log('error', err)
+  //console.log(newCompiledWebsiteString)
+  chrome.storage.local.set({"compiled_website": newCompiledWebsiteString})
+
+  return newCompiledWebsiteString
+}
+
+async function getHelperWebsites(urls) {
+  let helperWebsites = []
+  let promisesArray = []
+
+  for (let i=0; i<urls.length; i++) {
+    promisesArray.push(readFile(urls[i], function(_res){
+      helperWebsites.push(_res)
+    }));
+  }
+
+  return new Promise((resolve) => { 
+    Promise.all(promisesArray).then(() => {
+      resolve(helperWebsites)
+    })
   })
 }
 
 // Pulled from https://stackoverflow.com/questions/42108782/firefox-webextensions-get-local-files-content-by-path/44516256#44516256
-function readFile(_path, _cb){
-    fetch(_path).then(function(_res) {
-        return _res.blob();
-    }).then(function(_blob) {
-        var reader = new FileReader();
+async function readFile(_path, _cb){
+    return new Promise((resolve) => { 
+      fetch(_path).then(function(_res) {
+          return _res.blob();
+      }).then(function(_blob) {
+          var reader = new FileReader();
 
-        reader.addEventListener("loadend", function() {
-            _cb(this.result);
-        });
+          reader.addEventListener("loadend", function() {
+              resolve(_cb(this.result));
+          });
 
-        reader.readAsText(_blob); 
-    });
+          reader.readAsText(_blob, 'utf8');
+    })});
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-  console.log("Loaded")
-
   let searchForm = document.getElementById("circumvented-search");
 
   searchForm.addEventListener("submit", async (e) => {
     e.preventDefault()
-    compileDecentralizedSource()
-    chrome.tabs.create({ url: chrome.runtime.getURL('website_store/recompiled_website.com.html') });
+    await Promise.all([compileDecentralizedSource()])
+    chrome.tabs.create({ url: chrome.runtime.getURL('recompiled_website.html') });
   });
 })
