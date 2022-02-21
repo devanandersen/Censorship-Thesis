@@ -63,7 +63,6 @@ async function compileDecentralizedSource(helperWebsites = null) {
 
   newCompiledWebsiteString = Buffer.from(newCompiledWebsiteString, 'utf8').toString()
   newCompiledWebsiteString.concat("\n<!-- Compiled using https://github.com/devanandersen/Censorship-Thesis -->")
-  //console.log(newCompiledWebsiteString)
   chrome.storage.local.set({"compiled_website": newCompiledWebsiteString})
 
   return newCompiledWebsiteString
@@ -107,6 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   searchForm.addEventListener("submit", async (e) => {
     e.preventDefault()
+    // TODO: Add in code here to check for input box, and compile based on text provided
     await Promise.all([compileDecentralizedSource()])
     chrome.tabs.create({ url: chrome.runtime.getURL('recompiled_website.html') });
   });

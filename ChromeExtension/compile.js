@@ -9,6 +9,7 @@ function compileDecentralizedSource(helperWebsites = null) {
   helperWebsites.push(fs.readFileSync('website_store/nytimes.com.html', 'utf8').toString())
   helperWebsites.push(fs.readFileSync('website_store/youtube.com.html', 'utf8').toString())
   helperWebsites.push(fs.readFileSync('website_store/www2.uottawa.ca.html', 'utf8').toString())
+  for (let i = 0; i < helperWebsites.length; i++) { console.log(helperWebsites[i].length) }
   let newCompiledWebsiteString = []
 
   for (let helperWebsite of helperWebsites) {

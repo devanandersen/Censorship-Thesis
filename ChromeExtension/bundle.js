@@ -2,30 +2,28 @@
 (function (Buffer){(function (){
 async function compileDecentralizedSource(helperWebsites = null) {
   helperWebsites = []
-  urls = ['website_store/reddit.com.html', 'website_store/amazon.com.html', 'website_store/nytimes.com.html', 'website_store/www2.uottawa.ca.html', 'website_store/youtube.com.html']
+  urls = ['https://devanandersen.com/ThesisExample/reddit.com.html', 'https://devanandersen.com/ThesisExample/amazon.com.html', 'https://devanandersen.com/ThesisExample/nytimes.com.html', 'https://devanandersen.com/ThesisExample/www2.uottawa.ca.html', 'https://devanandersen.com/ThesisExample/youtube.com.html']
 
   helperWebsites = await getHelperWebsites(urls)
   //console.log(helperWebsites)
 
-  //let test = readFile('website_store/reddit.com.html', function(_res){
+  //let test = readFile('https://devanandersen.com/ThesisExample/reddit.com.html', function(_res){
   //  helperWebsites.push(_res)
   //});
-  //let test2 = readFile('website_store/amazon.com.html', function(_res){
+  //let test2 = readFile('https://devanandersen.com/ThesisExample/amazon.com.html', function(_res){
   //  helperWebsites.push(_res)
   //});
-  //let test3 = readFile('website_store/nytimes.com.html', function(_res){
+  //let test3 = readFile('https://devanandersen.com/ThesisExample/nytimes.com.html', function(_res){
   //  helperWebsites.push(_res)
   //});
-  //let test4 = readFile('website_store/www2.uottawa.ca.html', function(_res){
+  //let test4 = readFile('https://devanandersen.com/ThesisExample/www2.uottawa.ca.html', function(_res){
   //  helperWebsites.push(_res)
   //});
-  //let test5 = readFile('website_store/youtube.com.html', function(_res){
+  //let test5 = readFile('https://devanandersen.com/ThesisExample/youtube.com.html', function(_res){
   //  helperWebsites.push(_res)
   //});
 
   //await Promise.all([test, test2, test3, test4, test5])
-
-  for (let i = 0; i < helperWebsites.length; i++) { console.log(helperWebsites[i].length) }
 
   let newCompiledWebsiteString = []
 
