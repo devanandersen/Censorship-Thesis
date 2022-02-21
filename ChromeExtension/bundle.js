@@ -5,26 +5,6 @@ async function compileDecentralizedSource(helperWebsites = null) {
   urls = ['https://devanandersen.com/ThesisExample/reddit.com.html', 'https://devanandersen.com/ThesisExample/amazon.com.html', 'https://devanandersen.com/ThesisExample/nytimes.com.html', 'https://devanandersen.com/ThesisExample/www2.uottawa.ca.html', 'https://devanandersen.com/ThesisExample/youtube.com.html']
 
   helperWebsites = await getHelperWebsites(urls)
-  //console.log(helperWebsites)
-
-  //let test = readFile('https://devanandersen.com/ThesisExample/reddit.com.html', function(_res){
-  //  helperWebsites.push(_res)
-  //});
-  //let test2 = readFile('https://devanandersen.com/ThesisExample/amazon.com.html', function(_res){
-  //  helperWebsites.push(_res)
-  //});
-  //let test3 = readFile('https://devanandersen.com/ThesisExample/nytimes.com.html', function(_res){
-  //  helperWebsites.push(_res)
-  //});
-  //let test4 = readFile('https://devanandersen.com/ThesisExample/www2.uottawa.ca.html', function(_res){
-  //  helperWebsites.push(_res)
-  //});
-  //let test5 = readFile('https://devanandersen.com/ThesisExample/youtube.com.html', function(_res){
-  //  helperWebsites.push(_res)
-  //});
-
-  //await Promise.all([test, test2, test3, test4, test5])
-
   let newCompiledWebsiteString = []
 
   for (let helperWebsite of helperWebsites) {
@@ -50,14 +30,9 @@ async function compileDecentralizedSource(helperWebsites = null) {
         }
 
         let sequenceToPrint = helperWebsiteBytes.slice(beginningChar, endingChar)
-        if (newCompiledWebsiteString.length == placementLocation) {
-          newCompiledWebsiteString = newCompiledWebsiteString.concat(sequenceToPrint)
-        } else {
-          for (let i = 0; i < length; i++) {
-            newCompiledWebsiteString.splice(placementLocation+i, 1, sequenceToPrint[i])
-          }
+        for (let i = 0; i < length; i++) {
+          newCompiledWebsiteString.splice(placementLocation+i, 1, sequenceToPrint[i])
         }
-        //console.log(`${sequenceIndex} ${commentForCompiling.length}`)
       }
     }
   }

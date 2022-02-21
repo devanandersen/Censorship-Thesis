@@ -90,11 +90,7 @@ pub fn compile_decentralized_source(helper_websites: &mut Vec<String>, _location
 
 
                 let sequence_to_print = &helper_website_str[beginning_char..ending_char];
-                if new_compiled_website_string.len() == placement_location {
-                    new_compiled_website_string.push_str(&sequence_to_print);
-                } else {
-                    new_compiled_website_string.replace_range(placement_location..placement_location+length, &sequence_to_print);
-                }
+                new_compiled_website_string.replace_range(placement_location..placement_location+length, &sequence_to_print);
             }
         }
     }
