@@ -1,10 +1,13 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 (function (Buffer){(function (){
-async function compileDecentralizedSource(helperWebsites = null) {
+async function compileDecentralizedSource(candidate_website = null) {
   helperWebsites = []
-  urls = ['https://devanandersen.com/ThesisExample/reddit.com.html', 'https://devanandersen.com/ThesisExample/amazon.com.html', 'https://devanandersen.com/ThesisExample/nytimes.com.html', 'https://devanandersen.com/ThesisExample/www2.uottawa.ca.html', 'https://devanandersen.com/ThesisExample/youtube.com.html']
+  urls = {
+    "carleton.ca" : ['https://devanandersen.com/ThesisExample/reddit.com.html', 'https://devanandersen.com/ThesisExample/amazon.com.html', 'https://devanandersen.com/ThesisExample/nytimes.com.html', 'https://devanandersen.com/ThesisExample/www2.uottawa.ca.html', 'https://devanandersen.com/ThesisExample/youtube.com.html'],
+    "devanandersen.com": ['https://devanandersen.com/ThesisExample/facebook.com.html']
+  }
 
-  helperWebsites = await getHelperWebsites(urls)
+  helperWebsites = await getHelperWebsites(urls[candidate_website])
   let newCompiledWebsiteString = []
 
   for (let helperWebsite of helperWebsites) {
@@ -83,8 +86,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   searchForm.addEventListener("submit", async (e) => {
     e.preventDefault()
-    await Promise.all([compileDecentralizedSource()])
-    chrome.tabs.create({ url: chrome.runtime.getURL('recompiled_website.html') });
+    if (e.target[0].value == "carleton.ca") {
+      await Promise.all([compileDecentralizedSource("carleton.ca")])
+      chrome.tabs.create({ url: chrome.runtime.getURL('recompiled_website.html') });
+    } else if (e.target[0].value == "devanandersen.com") {
+      await Promise.all([compileDecentralizedSource("devanandersen.com")])
+      chrome.tabs.create({ url: chrome.runtime.getURL('recompiled_website.html') });
+    }
   });
 })
 
